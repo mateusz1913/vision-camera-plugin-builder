@@ -1,0 +1,52 @@
+{
+  "name": "vision-camera-plugin-builder",
+  "version": "0.0.1",
+  "description": "Generate Vision Camera plugin boilerplate",
+  "keywords": [
+    "react-native",
+    "npx",
+    "android",
+    "ios",
+    "camera",
+    "vision",
+    "plugin",
+    "builder"
+  ],
+  "main": "build",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mateusz1913/vision-camera-plugin-builder.git"
+  },
+  "homepage": "https://github.com/mateusz1913/vision-camera-plugin-builder",
+  "author": "Mateusz Mędrek <luigimario1913@gmail.com> (https://github.com/mateusz1913)",
+  "license": "MIT",
+  "bin": {
+    "vision-camera-plugin-builder": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "generateIOS.rb"
+  ],
+  "scripts": {
+    "prepare": "babel --extensions .ts,.tsx src --out-dir build --ignore '**/__tests__/**' --delete-dir-on-start"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "kleur": "^4.1.5",
+    "ora": "5.4.1",
+    "prompts": "^2.4.2",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.6",
+    "@babel/core": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/prompts": "^2.0.14",
+    "@types/yargs": "^17.0.10",
+    "eslint": "^8.18.0",
+    "typescript": "^4.7.4"
+  }
+}
