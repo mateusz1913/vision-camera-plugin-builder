@@ -1,6 +1,6 @@
 # Vision Camera Plugin Builder
 
-<div style="display: flex; flex-direction: column; align-items: center; align-self: stretch">
+<div align="center">
   <div style="padding: 30px">
     <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="50%" />
   </div>
