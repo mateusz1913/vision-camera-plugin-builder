@@ -59,7 +59,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
     projectPath: {
       type: 'text',
       name: 'projectPath',
-      message: 'What is the relative path to project\'s .xcodeproj file?',
+      message: 'What is the (relative) path to project\'s .xcodeproj file?',
       initial: suggestIosXcodeproj(process.cwd()),
       validate: (input) => fs.existsSync(path.resolve(input)) || 'There is no file at specified path',
     },
@@ -67,12 +67,14 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
       type: 'text',
       name: 'pluginName',
       message: 'What is the name of the plugin?',
+      initial: 'XyzFrameProcessor',
       validate: (input) => Boolean(input) || 'Plugin name cannot be empty',
     },
     methodName: {
       type: 'text',
       name: 'methodName',
       message: 'What is the name of plugin\'s exported method?',
+      initial: 'xyz',
       validate: (input) => Boolean(input) || 'Method name cannot be empty',
     },
     lang: {
