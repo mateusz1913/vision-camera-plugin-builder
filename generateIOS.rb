@@ -6,24 +6,29 @@ if ARGV.length < 3
   exit
 end
 
-# ruby generateIOS.rb ./ios/crazyjapanesegame.xcodeproj AbcFrameProcessor abc
+# ruby generateIOS.rb <path-to-xcodeproj> <pluginName> <methodName>
 
-project_path = ARGV[0] # ./ios/crazyjapanesegame.xcodeproj
-plugin_name = ARGV[1] # AbcFrameProcessor
-method_name = ARGV[2] # abc
+project_path = ARGV[0] # <path-to-xcodeproj>
+plugin_name = ARGV[1] # <pluginName>
+method_name = ARGV[2] # <methodName>
 lang = ARGV[3] # Swift || ObjC || ObjCPP
 if lang == nil
   lang = "Swift"
 end
 
-### Project reference
+# Project reference
 project = Xcodeproj::Project.open(project_path)
 group = project.main_group
 
-### Creating bridging header (if needed)
+# Creating bridging header (if needed)
 if lang == "Swift"
+  bridging_headers = [
+    "#import <VisionCamera/FrameProcessorPlugin.h>",
+    "#import <VisionCamera/Frame.h>"
+  ].join("\n")
   default_bridging_header_filename = "#{project.root_object.name}-Bridging-Header.h"
   default_bridging_header_path = File.join(project.project_dir, default_bridging_header_filename)
+  is_bridging_header_created = false
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
     next if target.product_type != "com.apple.product-type.application"
@@ -33,11 +38,9 @@ if lang == "Swift"
         # Create default bridging header if needed and link it to build settings
         if File.exist?(default_bridging_header_path) == false
           bridging_header_file = File.new(default_bridging_header_path, 'w+')
-          File.write(default_bridging_header_path, [
-            "#import <VisionCamera/FrameProcessorPlugin.h>",
-            "#import <VisionCamera/Frame.h>"
-          ].join("\n"), mode: 'a')
+          File.write(default_bridging_header_path, bridging_headers, mode: 'a')
           bridging_header_file.close
+          is_bridging_header_created = true
           puts "Created #{default_bridging_header_filename}"
         end
 
@@ -46,20 +49,28 @@ if lang == "Swift"
     end
 
     # Link bridging header file to xcode if needed
-    destination_group = group[project.root_object.name]
-    if destination_group == nil
-      destination_group = group
+    if is_bridging_header_created == true
+      destination_group = group[project.root_object.name]
+      if destination_group == nil
+        destination_group = group
+      end
+      default_bridging_header_ref = destination_group.find_file_by_path(default_bridging_header_filename)
+      if default_bridging_header_ref == nil
+        default_bridging_header_ref = destination_group.new_file(default_bridging_header_path)
+      end
+      target.add_file_references([default_bridging_header_ref])
+    else
+      puts """
+      Make sure to add following lines to your bridging header file:
+
+      #{bridging_headers}
+      """
     end
-    default_bridging_header_ref = destination_group.find_file_by_path(default_bridging_header_filename)
-    if default_bridging_header_ref == nil
-      default_bridging_header_ref = destination_group.new_file(default_bridging_header_path)
-    end
-    target.add_file_references([default_bridging_header_ref])
 
   end
 end
 
-### Creating plugin group
+# Creating plugin group
 plugin_dir_path = File.join(project.project_dir, plugin_name)
 if Dir.exist?(plugin_dir_path) == false
   Dir.mkdir(plugin_dir_path)
@@ -117,7 +128,7 @@ if lang == "Swift"
 
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
-    next if target.product_type != "com.apple.product-type.application"
+    next if target.product_type != "com.apple.product-type.application" || target.product_type != "com.apple.product-type.library.static"
     target.add_file_references([objc_impl_file_ref, swift_file_ref])
   end
 else
@@ -162,7 +173,7 @@ else
 
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
-    next if target.product_type != "com.apple.product-type.application"
+    next if target.product_type != "com.apple.product-type.application" || target.product_type != "com.apple.product-type.library.static"
     target.add_file_references([objc_impl_file_ref])
   end
 end

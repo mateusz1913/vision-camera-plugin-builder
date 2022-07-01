@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 
 import kleur from 'kleur';
-import ora from 'ora';
 import type { PromptObject } from 'prompts';
-import prompts from 'prompts';
 import type { Arguments, Options } from 'yargs';
+
+import { getPromptResponse, printFinishSetup, spinner } from './common';
 
 type IOSArgName = 'projectPath' | 'pluginName' | 'methodName' | 'lang';
 
@@ -48,8 +48,6 @@ const suggestIosXcodeproj = (workingDir: string): string | undefined => {
 
   return undefined;
 };
-
-const spinner = ora({ color: 'green' });
 
 export async function iosCommandHandler(argv: Arguments<unknown>) {
   const questions: Record<
@@ -97,20 +95,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
       ],
     },
   };
-  const promptResponse = await prompts(
-    Object.entries(questions)
-      .filter(([ k, v ]) => {
-        if (argv[k] && v.validate) {
-          return !(v.validate(argv[k] as string) === true);
-        }
-
-        return !argv[k];
-      })
-      .map(([ ,v ]) => v), {
-    onCancel: () => {
-      process.exit(1);
-    },
-  });
+  const promptResponse = await getPromptResponse<IOSArgName, typeof questions>(questions, argv);
   const { lang, methodName, pluginName, projectPath }: {
     projectPath: string;
     pluginName: string;
@@ -127,19 +112,19 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
   childProcess.exec(
     `ruby ${path.resolve(__dirname, '../generateIOS.rb')} ${path.resolve(projectPath)} ${pluginName} ${methodName} ${lang}`,
     (err, stdout, stderr) => {
+      console.log('\n');
+      stdout.split('\n').map((s) => {
+        console.log(kleur.green(s));
+      });
+      stderr.split('\n').map((s) => {
+        console.error(kleur.red(s));
+      });
       if (err) {
         spinner.fail();
         console.log(kleur.red(err.message));
-      } else if (stderr) {
-        spinner.fail();
-        stderr.split('\n').map((s) => {
-          console.error(kleur.red(s));
-        });
-      } else if (stdout) {
+      } else {
         spinner.succeed();
-        stdout.split('\n').map((s) => {
-          console.log(kleur.green(s));
-        });
+        printFinishSetup(methodName);
       }
     },
   );

@@ -3,10 +3,10 @@ import path from 'path';
 
 import glob from 'glob';
 import kleur from 'kleur';
-import ora from 'ora';
 import type { PromptObject } from 'prompts';
-import prompts from 'prompts';
 import type { Arguments, Options } from 'yargs';
+
+import { getPromptResponse, printFinishSetup, spinner } from './common';
 
 type AndroidArgName = 'manifestPath' | 'pluginName' | 'methodName' | 'lang';
 
@@ -49,12 +49,14 @@ const createPluginFile = (lang: 'Kotlin' | 'Java', packageName: string, pluginNa
 package ${packageName}.${pluginName.toLowerCase()}
 
 import androidx.camera.core.ImageProxy
+import com.facebook.react.bridge.WritableNativeArray
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
 
 class ${pluginName}Plugin: FrameProcessorPlugin("${methodName}") {
   override fun callback(image: ImageProxy, params: Array<Any>): Any? {
     // code goes here
-    return null
+    var array = WritableNativeArray()
+    return array
   }
 }
 `.trim();
@@ -62,16 +64,18 @@ class ${pluginName}Plugin: FrameProcessorPlugin("${methodName}") {
 package ${packageName}.${pluginName.toLowerCase()};
 
 import androidx.camera.core.ImageProxy;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
 public class ${pluginName}Plugin extends FrameProcessorPlugin {
   @Override
   public Object callback(ImageProxy image, Object[] params) {
     // code goes here
-    return null;
+    WritableNativeArray array = new WritableNativeArray();
+    return array;
   }
 
-  ${pluginName}Plugin() {
+  public ${pluginName}Plugin() {
     super("${methodName}");
   }
 }
@@ -80,16 +84,16 @@ public class ${pluginName}Plugin extends FrameProcessorPlugin {
   return lang === 'Kotlin' ? kotlinPluginContent : javaPluginContent;
 };
 
-const createPluginPackageFile = (lang: 'Kotlin' | 'Java', packageName: string, pluginName: string) => {
+const createPluginPackageFile = (lang: 'Kotlin' | 'Java', packageName: string, pluginName: string, isApplicationPackage: boolean) => {
   const kotlinPluginPackageContent = `
-package ${packageName}.${pluginName.toLowerCase()}
+package ${packageName}${isApplicationPackage ? '.' + pluginName.toLowerCase() : ''}
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
-
+${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin\n`}
 class ${pluginName}PluginPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     FrameProcessorPlugin.register(${pluginName}Plugin())
@@ -103,7 +107,7 @@ class ${pluginName}PluginPackage : ReactPackage {
 `.trim();
 
   const javaPluginPackageContent = `
-package ${packageName}.${pluginName.toLowerCase()};
+package ${packageName}${isApplicationPackage ? '.' + pluginName.toLowerCase() : ''};
 
 import androidx.annotation.NonNull;
 
@@ -112,7 +116,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
-
+${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin;\n`}
 import java.util.Collections;
 import java.util.List;
 
@@ -134,8 +138,6 @@ public class ${pluginName}PluginPackage implements ReactPackage {
 
   return lang === 'Kotlin' ? kotlinPluginPackageContent : javaPluginPackageContent;
 };
-
-const spinner = ora({ color: 'green' });
 
 export async function androidCommandHandler(argv: Arguments<unknown>) {
   const questions: Record<
@@ -179,20 +181,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
       ],
     },
   };
-  const promptResponse = await prompts(
-    Object.entries(questions)
-      .filter(([ k, v ]) => {
-        if (argv[k] && v.validate) {
-          return !(v.validate(argv[k] as string) === true);
-        }
-
-        return !argv[k];
-      })
-      .map(([ ,v ]) => v), {
-    onCancel: () => {
-      process.exit(1);
-    },
-  });
+  const promptResponse = await getPromptResponse<AndroidArgName, typeof questions>(questions, argv);
   const { lang, methodName, pluginName, manifestPath }: {
     manifestPath: string;
     pluginName: string;
@@ -208,6 +197,8 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
 
   const manifestContent = fs.readFileSync(manifestPath, 'utf-8');
 
+  const isApplicationMatchArray = manifestContent.match(/<application/);
+  const isApplicationPackage = !!isApplicationMatchArray && isApplicationMatchArray.length > 0;
   const packageNameMatchArray = manifestContent.match(/package="(.+?)"/);
 
   if (!packageNameMatchArray || packageNameMatchArray.length < 2) {
@@ -243,17 +234,16 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   const pluginPackageFilename = pluginName + 'PluginPackage' + ext; 
 
   spinner.text = `Generating ${pluginPackageFilename}`;
-  const pluginPackageContent = createPluginPackageFile(lang, packageName, pluginName);
+  const pluginPackageContent = createPluginPackageFile(lang, packageName, pluginName, isApplicationPackage);
 
-  fs.writeFileSync(path.join(sourceDir, pluginName, pluginPackageFilename), pluginPackageContent, 'utf-8');
+  fs.writeFileSync(path.join(sourceDir, isApplicationPackage ? pluginName : '', pluginPackageFilename), pluginPackageContent, 'utf-8');
   console.log(kleur.green(`Generated ${pluginPackageFilename}`));
   spinner.text = '';
   spinner.succeed();
-  const isApplicationMatchArray = manifestContent.match(/<application/);
 
-  if (isApplicationMatchArray && isApplicationMatchArray.length > 0) {
+  if (isApplicationPackage) {
     console.log(kleur.yellow(`
-    Finish setup with registering ${pluginName + 'PluginPackage'} in getPackages method, in your MainApplication.(java|kt)
+    Finish Android setup with registering ${pluginName + 'PluginPackage'} in getPackages method, in your MainApplication.(java|kt)
 
     @Override
     protected List<ReactPackage> getPackages() {
@@ -265,4 +255,6 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
     }
     `.trim()));
   }
+
+  printFinishSetup(methodName);
 }
