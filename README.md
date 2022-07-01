@@ -7,6 +7,48 @@
   <blockquote>Create Vision Camera plugin native boilerplate in a few seconds</blockquote>
 </div>
 
+## How it works
+
+### Library use case
+
+For `vision-camera-<pluginName>`, it generates:
+
+- Android - inside Android source set:
+  ```
+  ├── android/src/main/<packageName>
+  │   ├── <pluginName>
+  │   ├──   ├── <pluginName>Plugin.(java|kt)
+  │   ├── <pluginName>PluginPackage.(java|kt)
+  ```
+- iOS - inside iOS library's source code folder:
+  ```
+  ├── ios
+  │   ├── <pluginName>
+  │   ├──   ├── <pluginName>Plugin.(m|mm)
+  │   ├──   ├── <pluginName>Plugin.Swift (if Swift selected)
+  │   ├── <projectName>-Bridging-Header.h (if Swift selected & no bridging header specified)
+  ```
+
+### Application usage
+
+For local usage inside application, it generates:
+
+- Android - inside Android source set:
+  ```
+  ├── android/src/main/<packageName>
+  │   ├── <pluginName>
+  │   ├──   ├── <pluginName>Plugin.(java|kt)
+  │   ├──   ├── <pluginName>PluginPackage.(java|kt)
+  ```
+- iOS - inside iOS library's source code folder:
+  ```
+  ├── ios
+  │   ├── <pluginName>
+  │   ├──   ├── <pluginName>Plugin.(m|mm)
+  │   ├──   ├── <pluginName>Plugin.Swift (if Swift selected)
+  │   ├── <projectName>-Bridging-Header.h (if Swift selected & no bridging header specified)
+  ```
+
 ## 🚀 Usage
 
 > :warning: To generate ios boilerplate, you must first install [xcodeproj](https://github.com/CocoaPods/Xcodeproj) gem
@@ -18,6 +60,8 @@ npx vision-camera-plugin-builder ios
 ```sh
 npx vision-camera-plugin-builder android
 ```
+
+After generating native files, cli will output additional info like suggested JS setup, or Android package manual linking info
 
 ## Options
 
