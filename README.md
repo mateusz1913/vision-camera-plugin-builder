@@ -2,7 +2,7 @@
 
 <div style="display: flex; flex-direction: column; align-items: center">
   <div style="padding: 30px">
-    <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="100%" />
+    <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="50%" />
   </div>
   <blockquote>Create Vision Camera plugin native boilerplate in a few seconds</blockquote>
 </div>
