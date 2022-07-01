@@ -9,7 +9,7 @@
 
 ## How it works
 
-### Library use case
+#### Library use case
 
 For `vision-camera-<pluginName>`, it generates:
 
@@ -29,7 +29,7 @@ For `vision-camera-<pluginName>`, it generates:
   │   ├── <projectName>-Bridging-Header.h (if Swift selected & no bridging header specified)
   ```
 
-### Application usage
+#### Application use case
 
 For local usage inside application, it generates:
 
