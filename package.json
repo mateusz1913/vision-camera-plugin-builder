@@ -28,29 +28,30 @@
     "generateIOS.rb"
   ],
   "scripts": {
-    "prepare": "babel --extensions .ts,.tsx src --out-dir build --ignore '**/__tests__/**' --delete-dir-on-start"
+    "prepare": "yarn run clean && yarn run build:prod",
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "rm -rf ./build/",
+    "lint": "eslint .",
+    "watch": "tsc --watch --preserveWatchOutput",
+    "watch:ncc": "yarn run build -w"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "dependencies": {
-    "kleur": "^4.1.5",
-    "ora": "5.4.1",
-    "prompts": "^2.4.2",
-    "yargs": "^17.5.1"
-  },
   "devDependencies": {
-    "@babel/cli": "^7.18.6",
-    "@babel/core": "^7.18.6",
-    "@babel/preset-env": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
     "@types/glob": "^7.2.0",
     "@types/prompts": "^2.0.14",
     "@types/yargs": "^17.0.10",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
+    "@vercel/ncc": "^0.34.0",
     "eslint": "^8.18.0",
     "eslint-plugin-import": "^2.26.0",
-    "typescript": "^4.7.4"
+    "kleur": "^4.1.5",
+    "ora": "5.4.1",
+    "prompts": "^2.4.2",
+    "typescript": "^4.7.4",
+    "yargs": "^17.5.1"
   }
 }

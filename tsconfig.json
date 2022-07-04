@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext"
+    "target": "es2015"
   },
-  "exclude": ["lib"]
+  "exclude": ["build", "lib"]
 }
