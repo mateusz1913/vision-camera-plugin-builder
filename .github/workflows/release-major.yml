@@ -5,12 +5,6 @@ on:
 
 jobs:
   npm-release-major:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-    steps:
-      - name: Publish major release
-        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
-        with:
-          increment: major
+    uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+    with:
+      increment: major
