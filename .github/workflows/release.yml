@@ -1,0 +1,48 @@
+name: Release to NPM
+
+on: workflow_dispatch
+
+jobs:
+  npm-pre-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Publish release candidate
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+        with:
+          pre_release: true
+  
+  npm-release-major:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Publish major release
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+        with:
+          increment: "major"
+  
+  npm-release-minor:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Publish minor release
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+        with:
+          increment: "minor"
+  
+  npm-release-patch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Publish patch release
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+        with:
+          increment: "patch"
