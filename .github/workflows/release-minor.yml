@@ -1,6 +1,7 @@
 name: Minor release to NPM
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
 
 jobs:
   npm-release-minor:
@@ -10,6 +11,6 @@ jobs:
         node-version: [16.x]
     steps:
       - name: Publish minor release
-        uses: mateusz1913/vision-camera-plugin-builder/.github/workflow-templates/npm-release-template.yml@main
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
         with:
-          increment: "minor"
+          increment: minor
