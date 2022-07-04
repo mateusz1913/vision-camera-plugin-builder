@@ -12,9 +12,10 @@ jobs:
     steps:
       - run: |
           echo "---- npm token: $NPM_TOKEN ----"
+          echo "---- npm token: ${{ secrets.NPM_TOKEN }} ----"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  npm-release-patch:
-    uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
-    with:
-      increment: patch
+  # npm-release-patch:
+  #   uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+  #   with:
+  #     increment: patch
