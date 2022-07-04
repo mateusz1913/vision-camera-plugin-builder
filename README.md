@@ -7,7 +7,7 @@
   <blockquote>Create Vision Camera plugin native boilerplate in a few seconds</blockquote>
 </div>
 
-## How it works
+## 🤔 How it works
 
 #### Library use case
 
@@ -63,7 +63,7 @@ npx vision-camera-plugin-builder android
 
 After generating native files, cli will output additional info like suggested JS setup, or Android package manual linking info
 
-## Options
+## ⚙️ Options
 
 | Flag | Input | Description |
 | ---- | ----- | ----------- |
