@@ -3,11 +3,15 @@ name: Publish to NPM reusable workflow (template)
 on:
   workflow_call:
     inputs:
+      npm_token:
+        description: NPM Token
+        required: true
+        type: string
       increment:
-        description: "Release increment (major|minor|patch)"
+        description: Release increment (major|minor|patch)
         type: string
       pre_release:
-        description: "Is release candidate?"
+        description: Is release candidate?
         type: boolean
 
 jobs:
@@ -34,7 +38,7 @@ jobs:
         run: |
           git config --global user.email "luigimario1913@gmail.com"
           git config --global user.name "Mateusz Mędrek"
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ inputs.npm_token }}" > .npmrc
           if [[ ${{ inputs.pre_release }} == true ]]
           then
             yarn release --preRelease=rc --ci --npm.skipChecks
@@ -43,4 +47,3 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
