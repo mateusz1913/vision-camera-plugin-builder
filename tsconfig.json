@@ -1,16 +1,16 @@
 {
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./typescript",
-    "composite": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "composite": false,
+    "declaration": false,
     "esModuleInterop": true,
-    "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
+    "importsNotUsedAsValues": "error",
     "jsx": "react",
-    "lib": ["esnext", "dom"],
-    "module": "esnext",
+    "lib": ["es2019", "es2020.promise", "es2020.bigint", "es2020.string"],
+    "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -19,10 +19,12 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "outDir": "build",
     "resolveJsonModule": true,
+    "rootDir": "src",
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2015"
+    "target": "es2019"
   },
   "exclude": ["build", "lib"]
 }
