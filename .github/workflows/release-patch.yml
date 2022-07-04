@@ -9,5 +9,4 @@ jobs:
     with:
       increment: patch
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
       npm_token: ${{ secrets.NPM_TOKEN }}

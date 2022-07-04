@@ -10,8 +10,6 @@ on:
         description: Is release candidate?
         type: boolean
     secrets:
-      github_token:
-        required: true
       npm_token:
         required: true
 
@@ -47,5 +45,5 @@ jobs:
             yarn release --increment=${{ inputs.increment }} --ci --npm.skipChecks
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
