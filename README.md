@@ -4,7 +4,7 @@
   <div style="padding: 30px">
     <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="50%" />
   </div>
-  <blockquote>Create Vision Camera plugin native boilerplate in a few seconds</blockquote>
+  <blockquote>Create <a href="https://github.com/mrousavy/react-native-vision-camera">Vision Camera</a> plugin native boilerplate in a few seconds</blockquote>
 </div>
 
 ## 🤔 How it works
