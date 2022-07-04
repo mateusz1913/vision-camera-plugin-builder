@@ -1,0 +1,11 @@
+name: Vision Camera Plugin Builder - Feature
+description: Propose a feature in Vision Camera Plugin Builder
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: Feature request
+      description: |
+        Describe feature request, why (and, if possible, how) it should be implemented
+    validations:
+      required: true

@@ -1,0 +1,57 @@
+name: Vision Camera Plugin Builder - Bug
+description: Report a bug with Vision Camera Plugin Builder
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Provide environment on which the issue exists.
+      value: |
+        node version: ???
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Is used with npx or as a local dependency?
+      options:
+        - label: "npx"
+        - label: "local dependency"
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Affected commands
+      options:
+        - label: "android"
+        - label: "ios"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Current behavior
+      description: |
+        Describe current behavior, add screenshots or videos, if it's affecting UI.
+      placeholder: |
+        Current behavior
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: |
+        Describe expected behavior.
+      placeholder: |
+        Expected behavior
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Reproduction repository link
+      description: |
+        It's YOUR responsibility to provide Github link to proper reproduction repository, otherwise bug will be closed without investigation.
+        Provide repro steps to README.md inside reproduction repository
+      placeholder: |
+        Save and respect My time, and provide link to repro...
+    validations:
+      required: true
