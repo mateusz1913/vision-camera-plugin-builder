@@ -4,11 +4,14 @@ on:
   workflow_call:
     inputs:
       increment:
-        description: "Release increment (major|minor|patch)"
+        description: Release increment (major|minor|patch)
         type: string
       pre_release:
-        description: "Is release candidate?"
+        description: Is release candidate?
         type: boolean
+    secrets:
+      npm_token:
+        required: true
 
 jobs:
   release:
@@ -43,4 +46,4 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.npm_token }}

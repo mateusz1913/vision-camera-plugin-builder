@@ -8,3 +8,5 @@ jobs:
     uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
     with:
       pre_release: true
+    secrets:
+      npm_token: ${{ secrets.NPM_TOKEN }}
