@@ -1,5 +1,4 @@
 name: Publish to NPM reusable workflow (template)
-description: Build and publish library to NPM
 
 on:
   workflow_call:
