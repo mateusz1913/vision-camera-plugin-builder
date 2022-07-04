@@ -1,0 +1,15 @@
+name: Pre-release to NPM
+
+on: workflow_dispatch
+
+jobs:
+  npm-pre-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Publish release candidate
+        uses: mateusz1913/vision-camera-plugin-builder/.github/workflow-templates/npm-release-template.yml@main
+        with:
+          pre_release: true
