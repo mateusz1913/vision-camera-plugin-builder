@@ -8,4 +8,6 @@ jobs:
     uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
     with:
       increment: minor
+    secrets:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
       npm_token: ${{ secrets.NPM_TOKEN }}
