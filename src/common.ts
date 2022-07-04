@@ -7,27 +7,27 @@ import type { Arguments } from 'yargs';
 export const spinner = ora({ color: 'green' });
 
 export function printFinishSetup(methodName: string) {
-  console.log(`
-  ${kleur.blue('Finish plugin JS setup:')}
-  // In JS/TS code:
-  export function ${methodName}(frame: Frame) {
-    'worklet'
-    return __${methodName}(frame)
-  
-  // In babel.config.js
-  module.exports = {
+  console.log(`${kleur.cyan(`Finish plugin JS setup:
+// In JS/TS
+export function ${methodName}(frame: Frame) {
+  'worklet';
+  return __${methodName}(frame);
+}
+
+// In babel.config.js
+module.exports = {
+  // ...
+  plugins: [
     // ...
-    plugins: [
-      // ...
-      [
-        'react-native-reanimated/plugin',
-        {
-          globals: ['__${methodName}'],
-        },
-      ],
+    [
+      'react-native-reanimated/plugin',
+      {
+        globals: ['__${methodName}'],
+      },
     ],
-  }
-  `);
+  ],
+}`)}`.trim());
+  console.log('\n');
 }
 
 export function getPromptResponse<ArgName extends string, T extends Record<

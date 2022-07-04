@@ -192,8 +192,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
     ...promptResponse,
   };
 
-  spinner.text = `Generating ${pluginName}`;
-  spinner.start();
+  console.log(kleur.green(`\nGenerating ${pluginName}\n`));
 
   const manifestContent = fs.readFileSync(manifestPath, 'utf-8');
 
@@ -202,8 +201,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   const packageNameMatchArray = manifestContent.match(/package="(.+?)"/);
 
   if (!packageNameMatchArray || packageNameMatchArray.length < 2) {
-    spinner.fail();
-    console.error(kleur.red('\nCannot extract package from manifest'));
+    console.error(kleur.red('\nCannot extract package from manifest\n'));
     return;
   }
 
@@ -215,8 +213,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
     // Handle project with kotlin source set
     sourceDir = path.join(manifestPath.replace('/AndroidManifest.xml', ''), 'kotlin', ...packageElements);
     if (!fs.existsSync(sourceDir)) {
-      spinner.fail();
-      console.error(kleur.red(`\nCannot find main source set at ${sourceDir}`));
+      console.error(kleur.red(`\nCannot find main source set at ${sourceDir}\n`));
       return;
     }
   }
@@ -227,33 +224,34 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   const pluginFilename = pluginName + 'Plugin' + ext;
 
   spinner.text = `Generating ${pluginFilename}`;
+  spinner.start();
   const pluginContent = createPluginFile(lang, packageName, pluginName, methodName);
 
   fs.writeFileSync(path.join(sourceDir, pluginName, pluginFilename), pluginContent, 'utf-8');
-  console.log(kleur.green(`\nGenerated ${pluginFilename}`));
+  spinner.succeed();
   const pluginPackageFilename = pluginName + 'PluginPackage' + ext; 
 
   spinner.text = `Generating ${pluginPackageFilename}`;
+  spinner.start();
   const pluginPackageContent = createPluginPackageFile(lang, packageName, pluginName, isApplicationPackage);
 
   fs.writeFileSync(path.join(sourceDir, isApplicationPackage ? pluginName : '', pluginPackageFilename), pluginPackageContent, 'utf-8');
-  console.log(kleur.green(`Generated ${pluginPackageFilename}`));
-  spinner.text = '';
   spinner.succeed();
 
+  console.log('\n');
   if (isApplicationPackage) {
-    console.log(kleur.yellow(`
-    Finish Android setup with registering ${pluginName + 'PluginPackage'} in getPackages method, in your MainApplication.(java|kt)
+    console.log(kleur.yellow(`Finish Android setup with registering ${pluginName + 'PluginPackage'}
+in getPackages method, in your MainApplication.(java|kt)
 
-    @Override
-    protected List<ReactPackage> getPackages() {
-      @SuppressWarnings("UnnecessaryLocalVariable")
-      List<ReactPackage> packages = new PackageList(this).getPackages();
-      // ...
-      packages.add(new ${pluginName + 'PluginPackage'}()); // <- add
-      return packages;
-    }
-    `.trim()));
+@Override
+protected List<ReactPackage> getPackages() {
+  @SuppressWarnings("UnnecessaryLocalVariable")
+  List<ReactPackage> packages = new PackageList(this).getPackages();
+  // ...
+  packages.add(new ${pluginName + 'PluginPackage'}()); // <- add
+  return packages;
+}`.trim()));
+    console.log('\n');
   }
 
   printFinishSetup(methodName);

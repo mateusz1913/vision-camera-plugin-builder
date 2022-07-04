@@ -112,7 +112,12 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
   childProcess.exec(
     `ruby ${path.resolve(__dirname, '../generateIOS.rb')} ${path.resolve(projectPath)} ${pluginName} ${methodName} ${lang}`,
     (err, stdout, stderr) => {
-      console.log('\n');
+      if (err) {
+        spinner.fail();
+      } else {
+        spinner.succeed();
+      }
+
       stdout.split('\n').map((s) => {
         console.log(kleur.green(s));
       });
@@ -120,10 +125,8 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
         console.error(kleur.red(s));
       });
       if (err) {
-        spinner.fail();
         console.log(kleur.red(err.message));
       } else {
-        spinner.succeed();
         printFinishSetup(methodName);
       }
     },
