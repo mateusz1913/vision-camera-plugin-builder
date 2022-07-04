@@ -5,12 +5,6 @@ on:
 
 jobs:
   npm-pre-release:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-    steps:
-      - name: Publish release candidate
-        uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
-        with:
-          pre_release: true
+    uses: mateusz1913/vision-camera-plugin-builder/.github/workflows/npm-release-template.yml@main
+    with:
+      pre_release: true
