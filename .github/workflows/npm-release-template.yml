@@ -30,11 +30,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache-dependency-path: "**/yarn.lock"
       - run: yarn
-      - name: Prepare build
-        run: |
-          yarn prepare
       - name: Run Release
-        shell: bash
         run: |
           git config --global user.email "luigimario1913@gmail.com"
           git config --global user.name "Mateusz Mędrek"
