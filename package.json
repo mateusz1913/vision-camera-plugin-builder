@@ -21,7 +21,7 @@
   "author": "Mateusz Mędrek <luigimario1913@gmail.com> (https://github.com/mateusz1913)",
   "license": "MIT",
   "bin": {
-    "vision-camera-plugin-builder": "./build/index.js"
+    "vision-camera-plugin-builder": "bin/vision-camera-plugin-builder"
   },
   "files": [
     "build",
