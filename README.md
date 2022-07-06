@@ -9,6 +9,10 @@
 
 ## 🤔 How it works
 
+<div align="center">
+  <img src="./static/vision-camera-plugin-builder-cli.gif" alt="Gif with how Vision Camera Plugin Builder works" width="80%" />
+</div>
+
 #### Library use case
 
 For `vision-camera-<pluginName>`, it generates:
