@@ -4,3 +4,6 @@ build/
 typescript/
 
 .npmrc
+
+# IDE
+.idea
