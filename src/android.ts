@@ -227,15 +227,15 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   spinner.start();
   const pluginContent = createPluginFile(lang, packageName, pluginName, methodName);
 
-  fs.writeFileSync(path.join(sourceDir, pluginName, pluginFilename), pluginContent, 'utf-8');
+  fs.writeFileSync(path.join(sourceDir, pluginName.toLowerCase(), pluginFilename), pluginContent, 'utf-8');
   spinner.succeed();
-  const pluginPackageFilename = pluginName + 'PluginPackage' + ext; 
+  const pluginPackageFilename = pluginName + 'PluginPackage' + ext;
 
   spinner.text = `Generating ${pluginPackageFilename}`;
   spinner.start();
   const pluginPackageContent = createPluginPackageFile(lang, packageName, pluginName, isApplicationPackage);
 
-  fs.writeFileSync(path.join(sourceDir, isApplicationPackage ? pluginName : '', pluginPackageFilename), pluginPackageContent, 'utf-8');
+  fs.writeFileSync(path.join(sourceDir, isApplicationPackage ? pluginName.toLowerCase() : '', pluginPackageFilename), pluginPackageContent, 'utf-8');
   spinner.succeed();
 
   console.log('\n');
