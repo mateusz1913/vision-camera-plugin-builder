@@ -1,6 +1,6 @@
 {
   "name": "vision-camera-plugin-builder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Generate Vision Camera plugin boilerplate",
   "keywords": [
     "react-native",
