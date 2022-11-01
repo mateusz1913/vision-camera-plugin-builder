@@ -16,6 +16,10 @@ if lang == nil
   lang = "Swift"
 end
 
+def is_product_type_app_or_library(product_type)
+  return ["com.apple.product-type.application", "com.apple.product-type.library.static"].include? product_type
+end
+
 # Project reference
 project = Xcodeproj::Project.open(project_path)
 group = project.main_group
@@ -31,7 +35,7 @@ if lang == "Swift"
   is_bridging_header_created = false
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
-    if target.product_type == ("com.apple.product-type.application" || "com.apple.product-type.library.static")
+    if is_product_type_app_or_library(target.product_type)
 
       target.build_configurations.each do |config|
         if config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] == nil
@@ -129,7 +133,7 @@ if lang == "Swift"
 
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
-    if target.product_type == ("com.apple.product-type.application" || "com.apple.product-type.library.static")
+    if is_product_type_app_or_library(target.product_type)
       target.add_file_references([objc_impl_file_ref, swift_file_ref])
     end
   end
@@ -175,7 +179,7 @@ else
 
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
-    if target.product_type == ("com.apple.product-type.application" || "com.apple.product-type.library.static")
+    if is_product_type_app_or_library(target.product_type)
       target.add_file_references([objc_impl_file_ref])
     end
   end
