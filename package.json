@@ -66,13 +66,9 @@
     ]
   },
   "release-it": {
-    "hooks": {
-      "after:release": "git checkout -b releases/v_${version} && git push -u origin releases/v_${version}"
-    },
     "git": {
       "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}",
-      "push": false
+      "tagName": "v${version}"
     },
     "npm": {
       "publish": true
