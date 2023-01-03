@@ -4,6 +4,15 @@ build/
 typescript/
 
 .npmrc
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.DS_Store
 
 # IDE
 .idea
