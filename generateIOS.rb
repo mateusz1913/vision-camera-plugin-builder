@@ -65,9 +65,9 @@ if lang == "Swift"
         target.add_file_references([default_bridging_header_ref])
       else
         puts """
-        Make sure to add following lines to your bridging header file:
+Make sure to add following lines to your bridging header file:
 
-        #{bridging_headers}
+#{bridging_headers}
         """
       end
 
@@ -87,28 +87,18 @@ end
 
 # Create plugin files and link to xcode
 if lang == "Swift"
-  objc_impl_filename = "#{plugin_name}.m"
-  objc_impl_file_path = File.join(plugin_dir_path, objc_impl_filename)
-  if File.exist?(objc_impl_file_path) == false
-    objc_impl_file = File.new(objc_impl_file_path, 'w+')
-    File.write(objc_impl_file_path, [
-      "#import <VisionCamera/FrameProcessorPlugin.h>",
-      "",
-      "@interface VISION_EXPORT_SWIFT_FRAME_PROCESSOR(#{method_name}, #{plugin_name}Plugin)",
-      "@end"
-    ].join("\n"), mode: 'a')
-    objc_impl_file.close
-    puts "Created #{objc_impl_filename}"
-  end
-
   swift_filename = "#{plugin_name}.swift"
   swift_file_path = File.join(plugin_dir_path, swift_filename)
   if File.exist?(swift_file_path) == false
     swift_file = File.new(swift_file_path, 'w+')
     File.write(swift_file_path, [
       "@objc(#{plugin_name}Plugin)",
-      "public class #{plugin_name}Plugin: NSObject, FrameProcessorPluginBase {",
-      "  @objc public static func callback(_ frame: Frame!, withArgs _: [Any]!) -> Any! {",
+      "public class #{plugin_name}Plugin: FrameProcessorPlugin {",
+      "  override public func name() -> String! {",
+      "    return \"#{method_name}\"",
+      "  }",
+      "",
+      "  public override func callback(_ frame: Frame!, withArguments arguments: [Any]!) -> Any! {",
       "    let buffer = frame.buffer",
       "    let orientation = frame.orientation",
       "    // code goes here",
@@ -120,11 +110,6 @@ if lang == "Swift"
     puts "Created #{swift_filename}"
   end
 
-  objc_impl_relative_path = File.join("#{plugin_group_ref.name}", "#{objc_impl_filename}")
-  objc_impl_file_ref = plugin_group_ref.find_file_by_path(objc_impl_relative_path)
-  if objc_impl_file_ref == nil
-    objc_impl_file_ref = plugin_group_ref.new_file(objc_impl_file_path)
-  end
   swift_impl_relative_path = File.join("#{plugin_group_ref.name}", "#{swift_filename}")
   swift_file_ref = plugin_group_ref.find_file_by_path(swift_impl_relative_path)
   if swift_file_ref == nil
@@ -134,7 +119,7 @@ if lang == "Swift"
   project.targets.each do |target|
     # Skip if target type is unit tests or app extension, etc.
     if is_product_type_app_or_library(target.product_type)
-      target.add_file_references([objc_impl_file_ref, swift_file_ref])
+      target.add_file_references([swift_file_ref])
     end
   end
 else
@@ -151,19 +136,25 @@ else
       "#import <VisionCamera/FrameProcessorPlugin.h>",
       "#import <VisionCamera/Frame.h>",
       "",
-      "@interface #{plugin_name}Plugin : NSObject",
+      "@interface #{plugin_name}Plugin : FrameProcessorPlugin",
       "@end",
       "",
       "@implementation #{plugin_name}Plugin",
       "",
-      "static inline id #{method_name}(Frame* frame, NSArray* args) {",
+      "- (NSString *)name {",
+      "  return @\"#{method_name}\";",
+      "}",
+      "",
+      "- (id)callback:(Frame *)frame withArguments:(NSArray<id> *)arguments {",
       "  CMSampleBufferRef buffer = frame.buffer;",
       "  UIImageOrientation orientation = frame.orientation;",
       "  // code goes here",
       "  return @[];",
       "}",
       "",
-      "VISION_EXPORT_FRAME_PROCESSOR(#{method_name})",
+      "+ (void) load {",
+      "  [self registerPlugin:[[#{plugin_name}Plugin alloc] init]];",
+      "}",
       "",
       "@end"
     ].join("\n"), mode: 'a')

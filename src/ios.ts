@@ -49,6 +49,29 @@ const suggestIosXcodeproj = (workingDir: string): string | undefined => {
   return undefined;
 };
 
+const printFinishIOSSetup = (pluginName: string, lang: 'Swift' | 'ObjC' | 'ObjCPP') => {
+  if (lang !== 'Swift') {
+    return;
+  }
+
+  console.log(`${kleur.bgCyan('Finish plugin iOS setup in your project\'s "AppDelegate.mm"')}`);
+  console.log(`${kleur.cyan(`
+#import <VisionCamera/FrameProcessorPlugin.h>
+
+// learn more about importing Swift to ObjC "https://developer.apple.com/documentation/swift/importing-swift-into-objective-c"
+#import "YOUR_XCODE_PROJECT_NAME-Swift.h"
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  // ...
+
+  [FrameProcessorPlugin registerPlugin:[[${pluginName} alloc] init]];
+
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}`)}`.trim());
+  console.log('\n');
+};
+
 export async function iosCommandHandler(argv: Arguments<unknown>) {
   const questions: Record<
     IOSArgName,
@@ -127,6 +150,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
       if (err) {
         console.log(kleur.red(err.message));
       } else {
+        printFinishIOSSetup(pluginName, lang);
         printFinishSetup(methodName);
       }
     },
