@@ -1,12 +1,20 @@
-import childProcess from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import kleur from 'kleur';
 import type { PromptObject } from 'prompts';
 import type { Arguments, Options } from 'yargs';
 
 import { getPromptResponse, printFinishSetup, spinner } from './common';
+import {
+  createIOSPluginDirectory,
+  createObjCPluginImplementation,
+  createSwiftPluginImplementation,
+  displayFinishStepsForIOSLibraryPlugin,
+  getIOSPbxProj,
+  isFirstTargetAnApplication,
+  saveIOSPbxProj,
+  suggestIosXcodeproj,
+} from './ios-utils';
 
 type IOSArgName = 'projectPath' | 'pluginName' | 'methodName' | 'lang';
 
@@ -25,28 +33,6 @@ export const iosArgs: Record<IOSArgName, Options> = {
   lang: {
     choices: [ 'Swift', 'ObjC', 'ObjCPP' ],
   },
-};
-
-const suggestIosXcodeproj = (workingDir: string): string | undefined => {
-  const iosDir = path.join(workingDir, 'ios');
-
-  if (!fs.existsSync(iosDir)) {
-    return undefined;
-  }
-
-  const files = fs.readdirSync(iosDir);
-  const sortedFiles = files.sort();
-
-  for (let i = sortedFiles.length - 1; i >= 0; i--) {
-    const filename = files[i] as string;
-    const ext = path.extname(filename);
-
-    if (ext === '.xcodeproj') {
-      return path.resolve(iosDir, filename);
-    }
-  }
-
-  return undefined;
 };
 
 export async function iosCommandHandler(argv: Arguments<unknown>) {
@@ -96,7 +82,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
     },
   };
   const promptResponse = await getPromptResponse<IOSArgName, typeof questions>(questions, argv);
-  const { lang, methodName, pluginName, projectPath }: {
+  const { lang = 'Swift', methodName, pluginName, projectPath }: {
     projectPath: string;
     pluginName: string;
     methodName: string;
@@ -106,29 +92,24 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
     ...promptResponse,
   };
 
-  spinner.text = `Generating ${pluginName}`;
-  spinner.start();
+  const { pbxproj, pbxprojPath } = getIOSPbxProj(projectPath);
+  const pluginDirectory = createIOSPluginDirectory(projectPath, pluginName);
 
-  childProcess.exec(
-    `ruby ${path.resolve(__dirname, '../generateIOS.rb')} ${path.resolve(projectPath)} ${pluginName} ${methodName} ${lang}`,
-    (err, stdout, stderr) => {
-      if (err) {
-        spinner.fail();
-      } else {
-        spinner.succeed();
-      }
+  if (lang === 'Swift') {
+    createSwiftPluginImplementation(pbxproj, pluginDirectory, pluginName, methodName, spinner);
+  } else {
+    createObjCPluginImplementation(pbxproj, pluginDirectory, pluginName, methodName, lang, spinner);
+  }
 
-      stdout.split('\n').map((s) => {
-        console.log(kleur.green(s));
-      });
-      stderr.split('\n').map((s) => {
-        console.error(kleur.red(s));
-      });
-      if (err) {
-        console.log(kleur.red(err.message));
-      } else {
-        printFinishSetup(methodName);
-      }
-    },
-  );
+  saveIOSPbxProj(pbxproj, pbxprojPath);
+
+  spinner.stop();
+
+  console.log('\n');
+  if (!isFirstTargetAnApplication(pbxproj)) {
+    displayFinishStepsForIOSLibraryPlugin();
+    console.log('\n');
+  }
+
+  printFinishSetup(methodName);
 }

@@ -7,26 +7,17 @@ import type { Arguments } from 'yargs';
 export const spinner = ora({ color: 'green' });
 
 export function printFinishSetup(methodName: string) {
-  console.log(`${kleur.cyan(`Finish plugin JS setup:
-// In JS/TS
-export function ${methodName}(frame: Frame) {
-  'worklet';
-  return __${methodName}(frame);
-}
+  console.log(`${kleur.gray(`${kleur.cyan('Finish plugin JS setup:')}
+// For JS/TS
+${kleur.green(`import { VisionCameraProxy, Frame } from 'react-native-vision-camera'
 
-// In babel.config.js
-module.exports = {
-  // ...
-  plugins: [
-    // ...
-    [
-      'react-native-reanimated/plugin',
-      {
-        globals: ['__${methodName}'],
-      },
-    ],
-  ],
-}`)}`.trim());
+const plugin = VisionCameraProxy.getFrameProcessorPlugin('${methodName}')
+
+export function ${methodName}(frame: Frame) {
+  'worklet'
+  return plugin?.call(frame)
+}`)}
+`)}`.trim());
   console.log('\n');
 }
 
