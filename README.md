@@ -7,13 +7,21 @@
   <blockquote>Create <a href="https://github.com/mrousavy/react-native-vision-camera">Vision Camera</a> plugin native boilerplate in a few seconds</blockquote>
 </div>
 
-## 🤔 How it works
+## 🚀 Usage
 
-<div align="center">
-  <img src="./static/vision-camera-plugin-builder-cli.gif" alt="Gif with how Vision Camera Plugin Builder works" width="80%" />
-</div>
+```sh
+npx vision-camera-plugin-builder ios
+```
 
-#### Library use case
+```sh
+npx vision-camera-plugin-builder android
+```
+
+After generating native files, cli will output additional post-setup info
+
+> :info: the CLI from v0.3.0 only supports [Vision Camera](https://github.com/mrousavy/react-native-vision-camera) v3 plugins, for Vision Camera v2 plugins use `npx vision-camera-plugin-builder@0.2.1`
+
+### Library use case
 
 For `vision-camera-<pluginName>`, it generates:
 
@@ -30,10 +38,11 @@ For `vision-camera-<pluginName>`, it generates:
   │   ├── <pluginName>
   │   ├──   ├── <pluginName>Plugin.(m|mm)
   │   ├──   ├── <pluginName>Plugin.Swift (if Swift selected)
-  │   ├── <projectName>-Bridging-Header.h (if Swift selected & no bridging header specified)
   ```
 
-#### Application use case
+In case of library use case the CLI will output how to proceed with additional steps for library's `.podspec` and `build.gradle` files
+
+### Application use case
 
 For local usage inside application, it generates:
 
@@ -50,22 +59,9 @@ For local usage inside application, it generates:
   │   ├── <pluginName>
   │   ├──   ├── <pluginName>Plugin.(m|mm)
   │   ├──   ├── <pluginName>Plugin.Swift (if Swift selected)
-  │   ├── <projectName>-Bridging-Header.h (if Swift selected & no bridging header specified)
   ```
 
-## 🚀 Usage
-
-> :warning: To generate ios boilerplate, you must first install [xcodeproj](https://github.com/CocoaPods/Xcodeproj) gem
-
-```sh
-npx vision-camera-plugin-builder ios
-```
-
-```sh
-npx vision-camera-plugin-builder android
-```
-
-After generating native files, cli will output additional info like suggested JS setup, or Android package manual linking info
+In case of application use case the CLI will output how to proceed with additional steps for Android application linking of the plugin's package
 
 ## ⚙️ Options
 
