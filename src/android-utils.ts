@@ -134,10 +134,13 @@ import com.facebook.react.uimanager.ViewManager
 import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry
 ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin\n`}
 class ${pluginName}PluginPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+  init {
     FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}") { options ->
       ${pluginName}Plugin()
     }
+  }
+
+  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return emptyList()
   }
 
@@ -163,10 +166,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ${pluginName}PluginPackage implements ReactPackage {
+  public ${pluginName}PluginPackage() {
+    FrameProcessorPluginRegistry.addFrameProcessorPlugin(
+            "${methodName}",
+            options -> new ${pluginName}Plugin()
+    );
+  }
+
   @NonNull
   @Override
   public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
-    FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}", options -> new ${pluginName}Plugin());
     return Collections.emptyList();
   }
 
