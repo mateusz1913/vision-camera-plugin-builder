@@ -15,7 +15,10 @@ const plugin = VisionCameraProxy.getFrameProcessorPlugin('${methodName}')
 
 export function ${methodName}(frame: Frame) {
   'worklet'
-  return plugin?.call(frame)
+  if (plugin == null) {
+    throw new Error("Failed to load Frame Processor Plugin!")
+  }
+  return plugin.call(frame)
 }`)}
 `)}`.trim());
   console.log('\n');
