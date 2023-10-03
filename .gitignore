@@ -16,3 +16,5 @@ typescript/
 
 # IDE
 .idea
+
+coverage/
