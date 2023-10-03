@@ -73,7 +73,7 @@ const prepareObjCPluginImplementation = (pluginName: string, methodName: string)
   return nil;
 }
 
-+ (void) load {
++ (void) initialize {
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"${methodName}"
                                         withInitializer:^FrameProcessorPlugin*(NSDictionary* options) {
     return [[${pluginName}Plugin alloc] initWithOptions:options];
