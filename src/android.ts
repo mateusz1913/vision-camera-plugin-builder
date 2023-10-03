@@ -10,11 +10,9 @@ import {
   createPluginFile,
   createPluginPackageFile,
   displayExtractPackageNameErrorMessage,
-  displayFinishStepsForAndroidApplicationPlugin,
-  displayFinishStepsForAndroidLibraryPlugin,
   extractPackageName,
   getSourceSetDirectory,
-  isManifestForApplication,
+  printFinishSetupForAndroid,
   suggestAndroidManifest,
 } from './android-utils';
 import { getPromptResponse, printFinishSetup, spinner } from './common';
@@ -138,12 +136,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   spinner.stop();
 
   console.log('\n');
-  if (isManifestForApplication(manifestPath)) {
-    displayFinishStepsForAndroidApplicationPlugin(pluginName);
-  } else {
-    displayFinishStepsForAndroidLibraryPlugin();
-  }
+  printFinishSetupForAndroid(manifestPath, pluginName);
 
-  console.log('\n');
   printFinishSetup(methodName);
 }
