@@ -9,9 +9,8 @@ import {
   createIOSPluginDirectory,
   createObjCPluginImplementation,
   createSwiftPluginImplementation,
-  displayFinishStepsForIOSLibraryPlugin,
   getIOSPbxProj,
-  isFirstTargetAnApplication,
+  printFinishStepsForIOS,
   saveIOSPbxProj,
   suggestIosDirectory,
 } from './ios-utils';
@@ -106,10 +105,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
   spinner.stop();
 
   console.log('\n');
-  if (!pbxproj || !isFirstTargetAnApplication(pbxproj)) {
-    displayFinishStepsForIOSLibraryPlugin();
-    console.log('\n');
-  }
+  printFinishStepsForIOS(pbxproj);
 
   printFinishSetup(methodName);
 }
