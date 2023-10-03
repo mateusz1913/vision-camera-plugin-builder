@@ -16,7 +16,7 @@ const ANDROID_GLOB_OPTIONS = {
   nodir: false,
 };
 
-const NAMESPACE_VALUE_REGEX = /namespace (= ){0,1}"([A-Za-z]{1}[A-Za-z\d_]*\.)+[A-Za-z][A-Za-z\d_]*"/;
+const NAMESPACE_VALUE_REGEX = /namespace (= ){0,1}("|')([A-Za-z]{1}[A-Za-z\d_]*\.)+[A-Za-z][A-Za-z\d_]*("|')/;
 const PACKAGE_NAME_REGEX = /([A-Za-z]{1}[A-Za-z\d_]*\.)+[A-Za-z][A-Za-z\d_]*/;
 const PACKAGE_ATTRIBUTE_REGEX = /package="(.+?)"/;
 
@@ -67,6 +67,38 @@ export const extractPackageName = (workingDir: string, manifestPath: string) => 
  }
 
  return packageNameMatchArray[1] as string;
+};
+
+export const displayExtractPackageNameErrorMessage = () => {
+  console.error(kleur.red(`
+Cannot extract package from gradle scripts or manifest
+
+Make sure either:
+1. your application/library's "build.gradle" file has "namespace" value assigned e.g.
+
+android {
+  ndkVersion rootProject.ext.ndkVersion
+
+  compileSdkVersion rootProject.ext.compileSdkVersion
+
+  // in Groovy build.gradle you can use single or double quoted strings
+  namespace "com.myawesomeapp" // <--- add this
+  // namespace 'com.myawesomeapp' // <--- or this
+
+  // in Kotlin build.gradle.kts you must use double quotes string and "=" char
+  // namespace = "com.myawesomeapp" // <--- add this
+
+  // ...
+}
+
+2. your application/library's "AndroidManifest.xml" has a package attribute assigned e.g.
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.myawesomeapp"> // <--- add this
+
+
+</manifest>
+`));
 };
 
 /**
