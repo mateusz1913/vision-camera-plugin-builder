@@ -7,26 +7,58 @@ import type { Ora } from 'ora';
 import type { XcodeProject } from 'xcode';
 import xcode from 'xcode';
 
+const IOS_GLOB_OPTIONS = {
+  absolute: true,
+  ignore: [ '**/@(Carthage|Pods|vendor|node_modules)/**' ],
+  nocase: true,
+  nodir: false,
+};
+const PODSPEC_NAME_REGEX = /.name\s+=\s+"\w+"/;
+const PODSPEC_NAME_KEY_REGEX = /.name\s+=\s+"/;
+
 /**
- * Helper that suggests absolute path to iOS xcodeproj file
+ * Helper that suggests absolute path to ios directory
  */
-export const suggestIosXcodeproj = (workingDir: string): string | undefined => {
+export const suggestIosDirectory = (workingDir: string): string | undefined => {
+  const potentialIosDirectoryPath = path.resolve(workingDir, 'ios');
+
+  if (!fs.existsSync(potentialIosDirectoryPath)) {
+    return undefined;
+  }
+
+  return potentialIosDirectoryPath;
+};
+
+const findIosXcodeproj = (workingDir: string): string | undefined => {
   const [ xcodeprojFile ] = glob.sync('**/*.xcodeproj', {
     cwd: workingDir,
-    absolute: true,
-    ignore: [ '**/@(Carthage|Pods|vendor|node_modules)/**' ],
-    nocase: true,
-    nodir: false,
+    ...IOS_GLOB_OPTIONS,
   });
 
   return xcodeprojFile;
+};
+
+export const findLibraryPodspec = (workingDir: string): string | undefined => {
+  const [ podspecFile ] = glob.sync('**/*.podspec', {
+    // Podspec can be located in the parent directory for `ios` directory
+    cwd: path.resolve(workingDir, '..'),
+    ...IOS_GLOB_OPTIONS,
+  });
+
+  return podspecFile;
 };
 
 /**
  * Gets and parses iOS pbxproj file to JS object instance
  */
 export const getIOSPbxProj = (projectPath: string) => {
-  const pbxprojPath = path.join(projectPath, 'project.pbxproj');
+  const potentialXcodeprojFilePath = findIosXcodeproj(projectPath);
+
+  if (!potentialXcodeprojFilePath) {
+    return { pbxproj: null, pbxprojPath: null };
+  }
+
+  const pbxprojPath = path.join(potentialXcodeprojFilePath, 'project.pbxproj');
   const pbxproj = xcode.project(pbxprojPath);
 
   pbxproj.parseSync();
@@ -36,7 +68,11 @@ export const getIOSPbxProj = (projectPath: string) => {
 /**
  * Saves changes applied to JS object instance of iOS pbxproj
  */
-export const saveIOSPbxProj = (pbxproj: xcode.XcodeProject, pbxprojPath: string) => {
+export const saveIOSPbxProj = (pbxproj: xcode.XcodeProject | null, pbxprojPath: string | null) => {
+  if (!pbxproj || !pbxprojPath) {
+    return;
+  }
+
   fs.writeFileSync(pbxprojPath, pbxproj.writeSync());
 };
 
@@ -73,7 +109,7 @@ const prepareObjCPluginImplementation = (pluginName: string, methodName: string)
   return nil;
 }
 
-+ (void) initialize {
++ (void)initialize {
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"${methodName}"
                                         withInitializer:^FrameProcessorPlugin*(NSDictionary* options) {
     return [[${pluginName}Plugin alloc] initWithOptions:options];
@@ -127,7 +163,7 @@ public class ${pluginName}Plugin: FrameProcessorPlugin {
 
 @implementation ${pluginName}Plugin (FrameProcessorPluginLoader)
 
-+ (void)load
++ (void)initialize
 {
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"${methodName}"
                                         withInitializer:^FrameProcessorPlugin*(NSDictionary* options) {
@@ -146,8 +182,7 @@ public class ${pluginName}Plugin: FrameProcessorPlugin {
  * Helper that creates a directory for plugin's code inside iOS directory 
  */
 export const createIOSPluginDirectory = (projectPath: string, pluginName: string) => {
-  const iosProjectDirectory = path.dirname(projectPath);
-  const pluginDirectory = path.join(iosProjectDirectory, pluginName);
+  const pluginDirectory = path.join(projectPath, pluginName);
 
   if (!fs.existsSync(pluginDirectory)) {
     fs.mkdirSync(pluginDirectory);
@@ -194,8 +229,42 @@ const linkSwiftImplementation = (
   }
 };
 
+export const getFirstTargetNameFromPbxprojOrPodspec = (
+  pbxproj: XcodeProject | null,
+  projectPath: string,
+): string | undefined => {
+  // Application will have pbxproj, library may or may not have pbxproj
+  if (pbxproj) {
+    return pbxproj.getFirstTarget().firstTarget.name;
+  }
+
+  const podspecFilePath = findLibraryPodspec(projectPath);
+
+  if (!podspecFilePath) {
+    return undefined;
+  }
+
+  const podspecFileContent = fs.readFileSync(podspecFilePath, { encoding: 'utf-8' });
+  const nameRowMatch = podspecFileContent.match(PODSPEC_NAME_REGEX);
+
+  if (nameRowMatch?.[0] && nameRowMatch.index) {
+    const nameRowStr = podspecFileContent.slice(nameRowMatch.index, nameRowMatch.index + nameRowMatch[0].length);
+    const nameRowPrefixMatch = nameRowStr.match(PODSPEC_NAME_KEY_REGEX);
+
+    if (nameRowPrefixMatch?.[0]) {
+      // remove '.name     = "' & last '"'
+      const nameValue = nameRowStr.slice(nameRowPrefixMatch[0].length, nameRowStr.length - 1);
+
+      return nameValue;
+    }
+  }
+
+  return undefined;
+};
+
 export const createSwiftPluginImplementation = (
-  pbxproj: XcodeProject,
+  pbxproj: XcodeProject | null,
+  projectPath: string,
   pluginDirectory: string,
   pluginName: string,
   methodName: string,
@@ -205,7 +274,20 @@ export const createSwiftPluginImplementation = (
   const objcImplFilepath = path.join(pluginDirectory, objcImplFilename);
   const swiftImplFilename = `${pluginName}.swift`;
   const swiftImplFilepath = path.join(pluginDirectory, swiftImplFilename);
-  const firstTargetName = pbxproj.getFirstTarget().firstTarget.name;
+  
+  spinner.text = 'Getting first target name';
+  spinner.start();
+
+  const firstTargetName = getFirstTargetNameFromPbxprojOrPodspec(pbxproj, projectPath);
+
+  if (!firstTargetName) {
+    spinner.fail();
+    console.error(kleur.red('Could not determine name for application/library first target. Make sure your application has valid Xcodeproj file or your library has valid podspec with `name` attribute'));
+    return;
+  }
+
+  spinner.succeed();
+
   const [ swiftImplContent, objcImplContent ] = prepareSwiftPluginImplementation(
     pluginName,
     methodName,
@@ -229,7 +311,9 @@ export const createSwiftPluginImplementation = (
   spinner.text = `Linking ${objcImplFilename} & ${swiftImplFilename}`;
   spinner.start();
 
-  linkSwiftImplementation(pbxproj, pluginName, objcImplFilename, swiftImplFilename);
+  if (pbxproj) {
+    linkSwiftImplementation(pbxproj, pluginName, objcImplFilename, swiftImplFilename);
+  }
 
   spinner.succeed();
 };
@@ -262,7 +346,7 @@ const linkObjCImplementation = (
 };
 
 export const createObjCPluginImplementation = (
-  pbxproj: XcodeProject,
+  pbxproj: XcodeProject | null,
   pluginDirectory: string,
   pluginName: string,
   methodName: string,
@@ -283,7 +367,9 @@ export const createObjCPluginImplementation = (
   spinner.text = `Linking ${objcImplFilename}`;
   spinner.start();
 
-  linkObjCImplementation(pbxproj, pluginName, objcImplFilename);
+  if (pbxproj) {
+    linkObjCImplementation(pbxproj, pluginName, objcImplFilename);
+  }
 
   spinner.succeed();
 };
