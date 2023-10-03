@@ -305,7 +305,7 @@ export const createPluginPackageFile = (
   spinner.succeed();
 };
 
-export const displayFinishStepsForAndroidApplicationPlugin = (pluginName: string) => {
+const displayFinishStepsForAndroidApplicationPlugin = (pluginName: string) => {
   console.log(kleur.gray(`${kleur.yellow(`Finish Android setup with registering ${pluginName + 'PluginPackage'}
 in getPackages method, in your MainApplication.(java|kt)`)}
 // MainApplication.(java|kt)
@@ -319,7 +319,7 @@ protected List<ReactPackage> getPackages() {
 }`.trim()));
 };
 
-export const displayFinishStepsForAndroidLibraryPlugin = () => {
+const displayFinishStepsForAndroidLibraryPlugin = () => {
   console.log(kleur.gray(`${kleur.yellow(`Finish setup for your Android library
 with adding "VisionCamera" dependency in your library's "build.gradle" file:`)}
 // build.gradle
@@ -331,4 +331,14 @@ dependencies {
     implementation 'com.facebook.react:react-native:+' // From node_modules
     ${kleur.green('api project(":react-native-vision-camera") // <--- add this')}
 }`.trim()));
+};
+
+export const printFinishSetupForAndroid = (manifestPath: string, pluginName: string) => {
+  if (isManifestForApplication(manifestPath)) {
+    displayFinishStepsForAndroidApplicationPlugin(pluginName);
+  } else {
+    displayFinishStepsForAndroidLibraryPlugin();
+  }
+
+  console.log('\n');
 };
