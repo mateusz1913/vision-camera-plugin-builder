@@ -13,7 +13,7 @@ import {
   getIOSPbxProj,
   isFirstTargetAnApplication,
   saveIOSPbxProj,
-  suggestIosXcodeproj,
+  suggestIosDirectory,
 } from './ios-utils';
 
 type IOSArgName = 'projectPath' | 'pluginName' | 'methodName' | 'lang';
@@ -43,9 +43,9 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
     projectPath: {
       type: 'text',
       name: 'projectPath',
-      message: 'What is the (relative) path to project\'s .xcodeproj file?',
-      initial: suggestIosXcodeproj(process.cwd()),
-      validate: (input) => fs.existsSync(path.resolve(input)) || 'There is no file at specified path',
+      message: 'What is the path to ios directory for your application or library?',
+      initial: suggestIosDirectory(process.cwd()),
+      validate: (input) => fs.existsSync(path.resolve(input)) || 'There is no directory at specified path',
     },
     pluginName: {
       type: 'text',
@@ -96,7 +96,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
   const pluginDirectory = createIOSPluginDirectory(projectPath, pluginName);
 
   if (lang === 'Swift') {
-    createSwiftPluginImplementation(pbxproj, pluginDirectory, pluginName, methodName, spinner);
+    createSwiftPluginImplementation(pbxproj, projectPath, pluginDirectory, pluginName, methodName, spinner);
   } else {
     createObjCPluginImplementation(pbxproj, pluginDirectory, pluginName, methodName, lang, spinner);
   }
@@ -106,7 +106,7 @@ export async function iosCommandHandler(argv: Arguments<unknown>) {
   spinner.stop();
 
   console.log('\n');
-  if (!isFirstTargetAnApplication(pbxproj)) {
+  if (!pbxproj || !isFirstTargetAnApplication(pbxproj)) {
     displayFinishStepsForIOSLibraryPlugin();
     console.log('\n');
   }
