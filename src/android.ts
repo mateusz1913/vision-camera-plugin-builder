@@ -9,6 +9,7 @@ import {
   createAndroidPluginDirectory,
   createPluginFile,
   createPluginPackageFile,
+  displayExtractPackageNameErrorMessage,
   displayFinishStepsForAndroidApplicationPlugin,
   displayFinishStepsForAndroidLibraryPlugin,
   extractPackageName,
@@ -93,10 +94,11 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   spinner.text = 'Extracting android package name';
   spinner.start();
   
-  const packageName = extractPackageName(process.cwd(), manifestPath);
+  const packageName = extractPackageName(path.resolve(manifestPath, '..', '..'), manifestPath);
 
   if (!packageName) {
-    console.error(kleur.red('\nCannot extract package from gradle scripts or manifest\n'));
+    spinner.fail();
+    displayExtractPackageNameErrorMessage();
     return;
   }
 
@@ -108,6 +110,7 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
   const sourceDir = getSourceSetDirectory(manifestPath, packageName);
 
   if (!sourceDir) {
+    spinner.fail();
     console.error(kleur.red(`\nCannot find main source set at ${sourceDir}\n`));
     return;
   }
