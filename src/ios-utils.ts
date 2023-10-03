@@ -38,7 +38,7 @@ const findIosXcodeproj = (workingDir: string): string | undefined => {
   return xcodeprojFile;
 };
 
-export const findLibraryPodspec = (workingDir: string): string | undefined => {
+const findLibraryPodspec = (workingDir: string): string | undefined => {
   const [ podspecFile ] = glob.sync('**/*.podspec', {
     // Podspec can be located in the parent directory for `ios` directory
     cwd: path.resolve(workingDir, '..'),
@@ -76,10 +76,7 @@ export const saveIOSPbxProj = (pbxproj: xcode.XcodeProject | null, pbxprojPath: 
   fs.writeFileSync(pbxprojPath, pbxproj.writeSync());
 };
 
-/**
- * Helper that returns if first target is an application target
- */
-export const isFirstTargetAnApplication = (pbxproj: xcode.XcodeProject) => {
+const isFirstTargetAnApplication = (pbxproj: xcode.XcodeProject) => {
   return pbxproj.getFirstTarget().firstTarget.productType === '"com.apple.product-type.application"';
 };
 
@@ -191,21 +188,12 @@ export const createIOSPluginDirectory = (projectPath: string, pluginName: string
   return pluginDirectory;
 };
 
-const createObjCImplFileForSwiftImplementation = (
-  objcImplFilepath: string,
-  objcImplContent: string,
+const createFileForIOSImplementation = (
+  filepath: string,
+  content: string,
 ) => {
-  if (!fs.existsSync(objcImplFilepath)) {
-    fs.writeFileSync(objcImplFilepath, objcImplContent, { encoding: 'utf8' });
-  }
-};
-
-const createSwiftImplFileForSwiftImplementation = (
-  swiftImplFilepath: string,
-  swiftImplContent: string,
-) => {
-  if (!fs.existsSync(swiftImplFilepath)) {
-    fs.writeFileSync(swiftImplFilepath, swiftImplContent, { encoding: 'utf8' });
+  if (!fs.existsSync(filepath)) {
+    fs.writeFileSync(filepath, content, { encoding: 'utf8' });
   }
 };
 
@@ -297,14 +285,14 @@ export const createSwiftPluginImplementation = (
   spinner.text = `Generating ${objcImplFilename}`;
   spinner.start();
 
-  createObjCImplFileForSwiftImplementation(objcImplFilepath, objcImplContent);
+  createFileForIOSImplementation(objcImplFilepath, objcImplContent);
 
   spinner.succeed();
 
   spinner.text = `Generating ${swiftImplFilename}`;
   spinner.start();
 
-  createSwiftImplFileForSwiftImplementation(swiftImplFilepath, swiftImplContent);
+  createFileForIOSImplementation(swiftImplFilepath, swiftImplContent);
 
   spinner.succeed();
 
@@ -316,15 +304,6 @@ export const createSwiftPluginImplementation = (
   }
 
   spinner.succeed();
-};
-
-const createObjCImplFileForObjCImplementation = (
-  objcImplFilepath: string,
-  objcImplContent: string,
-) => {
-  if (!fs.existsSync(objcImplFilepath)) {
-    fs.writeFileSync(objcImplFilepath, objcImplContent, { encoding: 'utf8' });
-  }
 };
 
 /**
@@ -360,7 +339,7 @@ export const createObjCPluginImplementation = (
   spinner.text = `Generating ${objcImplFilename}`;
   spinner.start();
 
-  createObjCImplFileForObjCImplementation(objcImplFilepath, objcImplContent);
+  createFileForIOSImplementation(objcImplFilepath, objcImplContent);
 
   spinner.succeed();
 
@@ -374,8 +353,9 @@ export const createObjCPluginImplementation = (
   spinner.succeed();
 };
 
-export const displayFinishStepsForIOSLibraryPlugin = () => {
-  console.log(kleur.gray(`${kleur.yellow(`Finish setup for your iOS library with adding "VisionCamera" spec dependency
+export const printFinishStepsForIOS = (pbxproj: XcodeProject | null) => {
+  if (!pbxproj || !isFirstTargetAnApplication(pbxproj)) {
+    console.log(kleur.gray(`${kleur.yellow(`Finish setup for your iOS library with adding "VisionCamera" spec dependency
 in your library's ".podspec" file:`)}
 # YourAwesomePluginLibrary.podspec
 require "json"
@@ -398,4 +378,6 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   ${kleur.green('s.dependency "VisionCamera" # add this')}
 end`.trim()));
+    console.log('\n');
+  }
 };
