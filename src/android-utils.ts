@@ -123,7 +123,7 @@ package ${packageName}.${pluginName.toLowerCase()}
 import com.mrousavy.camera.frameprocessor.Frame
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
 
-class ${pluginName}Plugin: FrameProcessorPlugin() {
+class ${pluginName}Plugin(options: Map<String, Any>?): FrameProcessorPlugin(options) {
   override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
     // code goes here
     return null
@@ -166,9 +166,11 @@ import com.facebook.react.uimanager.ViewManager
 import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry
 ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin\n`}
 class ${pluginName}PluginPackage : ReactPackage {
-  init {
-    FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}") { options ->
-      ${pluginName}Plugin()
+  companion object {
+    init {
+      FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}") { options ->
+        ${pluginName}Plugin(options)
+      }
     }
   }
 
@@ -198,10 +200,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class ${pluginName}PluginPackage implements ReactPackage {
-  public ${pluginName}PluginPackage() {
+  static {
     FrameProcessorPluginRegistry.addFrameProcessorPlugin(
             "${methodName}",
-            options -> new ${pluginName}Plugin()
+            options -> new ${pluginName}Plugin(options)
     );
   }
 
