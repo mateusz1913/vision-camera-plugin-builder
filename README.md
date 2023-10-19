@@ -2,9 +2,9 @@
 
 <div align="center">
   <div style="padding: 30px">
-    <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="50%" />
+    <img src="./static/vision-camera-plugin-builder-logo.svg" alt="Vision Camera Plugin Builder logo" width="30%" />
   </div>
-  <blockquote>Create <a href="https://github.com/mrousavy/react-native-vision-camera">Vision Camera</a> plugin native boilerplate in a few seconds</blockquote>
+  A CLI to easily create <a href="https://github.com/mrousavy/react-native-vision-camera">VisionCamera</a> Frame Processor Plugins in a few seconds!
 </div>
 
 ## 🚀 Usage
