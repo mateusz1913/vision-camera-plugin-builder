@@ -11,7 +11,7 @@ export function printFinishSetup(methodName: string) {
 // For JS/TS
 ${kleur.green(`import { VisionCameraProxy, Frame } from 'react-native-vision-camera'
 
-const plugin = VisionCameraProxy.getFrameProcessorPlugin('${methodName}')
+const plugin = VisionCameraProxy.initFrameProcessorPlugin('${methodName}')
 
 export function ${methodName}(frame: Frame) {
   'worklet'

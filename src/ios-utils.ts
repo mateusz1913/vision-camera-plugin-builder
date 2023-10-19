@@ -94,24 +94,20 @@ const prepareObjCPluginImplementation = (pluginName: string, methodName: string)
 
 @implementation ${pluginName}Plugin
 
-- (instancetype) initWithOptions:(NSDictionary*)options; {
-  self = [super init];
+- (instancetype _Nonnull)initWithOptions:(NSDictionary* _Nullable)options
+{
+  self = [super initWithOptions:options];
   return self;
 }
 
-- (id)callback:(Frame*)frame withArguments:(NSDictionary*)arguments {
+- (id _Nullable)callback:(Frame* _Nonnull)frame withArguments:(NSDictionary* _Nullable)arguments {
   CMSampleBufferRef buffer = frame.buffer;
   UIImageOrientation orientation = frame.orientation;
   // code goes here
   return nil;
 }
 
-+ (void)initialize {
-  [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"${methodName}"
-                                        withInitializer:^FrameProcessorPlugin*(NSDictionary* options) {
-    return [[${pluginName}Plugin alloc] initWithOptions:options];
-  }];
-}
+VISION_EXPORT_FRAME_PROCESSOR(${pluginName}Plugin, ${methodName})
 
 @end
 `.trim();
@@ -132,11 +128,11 @@ import VisionCamera
 
 @objc(${pluginName}Plugin)
 public class ${pluginName}Plugin: FrameProcessorPlugin {
-  @objc public init(withOptions options: [AnyHashable : Any]) {
-    super.init()
+  public override init(options: [AnyHashable: Any]! = [:]) {
+    super.init(options: options)
   }
 
-  @objc override public func callback(_ frame: Frame, withArguments arguments: [AnyHashable : Any]?) -> Any {
+  public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any? {
     let buffer = frame.buffer
     let orientation = frame.orientation
     // code goes here
@@ -155,20 +151,7 @@ public class ${pluginName}Plugin: FrameProcessorPlugin {
 #import "${targetName}-Swift.h"
 #endif
 
-@interface ${pluginName}Plugin (FrameProcessorPluginLoader)
-@end
-
-@implementation ${pluginName}Plugin (FrameProcessorPluginLoader)
-
-+ (void)initialize
-{
-  [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"${methodName}"
-                                        withInitializer:^FrameProcessorPlugin*(NSDictionary* options) {
-    return [[${pluginName}Plugin alloc] initWithOptions:options];
-  }];
-}
-
-@end
+VISION_EXPORT_SWIFT_FRAME_PROCESSOR(${pluginName}Plugin, ${methodName})
 
 `.trim();
 
