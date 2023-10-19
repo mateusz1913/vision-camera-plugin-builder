@@ -19,7 +19,13 @@ npx vision-camera-plugin-builder android
 
 After generating native files, cli will output additional post-setup info
 
-> :info: the CLI from v0.3.0 only supports [Vision Camera](https://github.com/mrousavy/react-native-vision-camera) v3 plugins, for Vision Camera v2 plugins use `npx vision-camera-plugin-builder@0.2.1`
+### Supported versions
+
+| vision-camera-plugin-builder | react-native-vision-camera
+| --- | --- |
+| >= 0.5.0 | 3.5.0+ |
+| >= 0.3.0 | 3.0.0+ |
+| < 0.3.0 | 2.0.0+ |
 
 ### Library use case
 
