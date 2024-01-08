@@ -91,8 +91,8 @@ export async function androidCommandHandler(argv: Arguments<unknown>) {
 
   spinner.text = 'Extracting android package name';
   spinner.start();
-  
-  const packageName = extractPackageName(path.resolve(manifestPath, '..', '..'), manifestPath);
+
+  const packageName = extractPackageName(path.resolve(path.dirname(manifestPath), '..', '..'), manifestPath);
 
   if (!packageName) {
     spinner.fail();

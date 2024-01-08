@@ -46,7 +46,7 @@ export const extractPackageName = (workingDir: string, manifestPath: string) => 
  const results = [ ...groovyGradleResults, ...kotlinGradleResults ];
 
  for (const gradleScriptPath of results) {
-   const gradleScriptContent = fs.readFileSync(gradleScriptPath, { encoding: 'utf8' });
+   const gradleScriptContent = fs.readFileSync(gradleScriptPath, { encoding: 'utf-8' });
 
    const namespaceResults = gradleScriptContent.match(NAMESPACE_VALUE_REGEX);
 
@@ -140,6 +140,10 @@ import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 import java.util.Map;
 
 public class ${pluginName}Plugin extends FrameProcessorPlugin {
+  public ${pluginName}Plugin(@Nullable Map<String, Object> options) {
+    super(options);
+  }
+
   @Nullable
   @Override
   public Object callback(@NonNull Frame frame, @Nullable Map<String, Object> arguments) {
@@ -193,7 +197,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry;
 ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin;\n`}
 import java.util.Collections;
