@@ -14,3 +14,8 @@ commit-msg:
   commands:
     commitlint:
       run: npx commitlint --edit
+pre-push:
+  parallel: true
+  commands:
+    test:
+      run: yarn test

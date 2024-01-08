@@ -1,11 +1,10 @@
-import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
-import mockFS from 'mock-fs';
+import { vol } from 'memfs';
 import type xcode from 'xcode';
 
 import { getFirstTargetNameFromPbxprojOrPodspec } from '../src/ios-utils';
 
 const FIRST_TARGET_NAME = 'SamplePlugin';
-const PODSPEC_FILE_PATH = '/path/to/project';
+const PROJECT_FILE_PATH = '/path/to/project';
 const PODSPEC_FILE = `require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
@@ -28,16 +27,16 @@ Pod::Spec.new do |s|
 end
 `;
 
+jest.mock('fs');
+
 beforeEach(() => {
-  mockFS({
-    [PODSPEC_FILE_PATH]: {
-      'SamplePlugin.podspec': PODSPEC_FILE,
-    },
-  });
+  vol.fromJSON({
+    'SamplePlugin.podspec': PODSPEC_FILE,
+  }, PROJECT_FILE_PATH);
 });
 
 afterEach(() => {
-  mockFS.restore();
+  vol.reset();
 });
 
 describe('getFirstTargetNameFromPbxprojOrPodspec', () => {
@@ -50,13 +49,13 @@ describe('getFirstTargetNameFromPbxprojOrPodspec', () => {
           },
         }),
       } as unknown as xcode.XcodeProject,
-      PODSPEC_FILE_PATH,
+      PROJECT_FILE_PATH,
     )).toBe(FIRST_TARGET_NAME);
   });
   test('should retrieve first target name from podspec file', () => {
     expect(getFirstTargetNameFromPbxprojOrPodspec(
       null,
-      PODSPEC_FILE_PATH,
+      PROJECT_FILE_PATH,
     )).toBe(FIRST_TARGET_NAME);
   });
 });
