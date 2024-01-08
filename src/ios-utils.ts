@@ -176,7 +176,7 @@ const createFileForIOSImplementation = (
   content: string,
 ) => {
   if (!fs.existsSync(filepath)) {
-    fs.writeFileSync(filepath, content, { encoding: 'utf8' });
+    fs.writeFileSync(filepath, content, { encoding: 'utf-8' });
   }
 };
 
