@@ -87,6 +87,7 @@ const prepareObjCPluginImplementation = (pluginName: string, methodName: string)
   const objcPluginContent = `
 #import <VisionCamera/FrameProcessorPlugin.h>
 #import <VisionCamera/FrameProcessorPluginRegistry.h>
+#import <VisionCamera/VisionCameraProxy.h>
 #import <VisionCamera/Frame.h>
 
 @interface ${pluginName}Plugin : FrameProcessorPlugin
@@ -94,13 +95,14 @@ const prepareObjCPluginImplementation = (pluginName: string, methodName: string)
 
 @implementation ${pluginName}Plugin
 
-- (instancetype _Nonnull)initWithOptions:(NSDictionary* _Nullable)options
-{
-  self = [super initWithOptions:options];
+- (instancetype _Nonnull)initWithProxy:(VisionCameraProxyHolder*)proxy
+                           withOptions:(NSDictionary* _Nullable)options {
+  self = [super initWithProxy:proxy withOptions:options];
   return self;
 }
 
-- (id _Nullable)callback:(Frame* _Nonnull)frame withArguments:(NSDictionary* _Nullable)arguments {
+- (id _Nullable)callback:(Frame* _Nonnull)frame
+           withArguments:(NSDictionary* _Nullable)arguments {
   CMSampleBufferRef buffer = frame.buffer;
   UIImageOrientation orientation = frame.orientation;
   // code goes here
@@ -128,8 +130,8 @@ import VisionCamera
 
 @objc(${pluginName}Plugin)
 public class ${pluginName}Plugin: FrameProcessorPlugin {
-  public override init(options: [AnyHashable: Any]! = [:]) {
-    super.init(options: options)
+  public override init(proxy: VisionCameraProxyHolder, options: [AnyHashable: Any]! = [:]) {
+    super.init(proxy: proxy, options: options)
   }
 
   public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any? {
@@ -159,7 +161,7 @@ VISION_EXPORT_SWIFT_FRAME_PROCESSOR(${pluginName}Plugin, ${methodName})
 };
 
 /**
- * Helper that creates a directory for plugin's code inside iOS directory 
+ * Helper that creates a directory for plugin's code inside iOS directory
  */
 export const createIOSPluginDirectory = (projectPath: string, pluginName: string) => {
   const pluginDirectory = path.join(projectPath, pluginName);
@@ -245,7 +247,7 @@ export const createSwiftPluginImplementation = (
   const objcImplFilepath = path.join(pluginDirectory, objcImplFilename);
   const swiftImplFilename = `${pluginName}.swift`;
   const swiftImplFilepath = path.join(pluginDirectory, swiftImplFilename);
-  
+
   spinner.text = 'Getting first target name';
   spinner.start();
 
@@ -303,7 +305,7 @@ const linkObjCImplementation = (
     const pluginGroupKey = pbxproj.addPbxGroup([], pluginName, pluginName).uuid;
 
     pbxproj.addToPbxGroup(pluginGroupKey, mainGroupKey);
-    pbxproj.addSourceFile(objcImplFilename, { target: firstTargetUuid }, pluginGroupKey);  
+    pbxproj.addSourceFile(objcImplFilename, { target: firstTargetUuid }, pluginGroupKey);
   }
 };
 

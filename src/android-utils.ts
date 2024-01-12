@@ -122,8 +122,9 @@ package ${packageName}.${pluginName.toLowerCase()}
 
 import com.mrousavy.camera.frameprocessor.Frame
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
+import com.mrousavy.camera.frameprocessor.VisionCameraProxy
 
-class ${pluginName}Plugin(options: Map<String, Any>?): FrameProcessorPlugin(options) {
+class ${pluginName}Plugin(proxy: VisionCameraProxy, options: Map<String, Any>?): FrameProcessorPlugin() {
   override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
     // code goes here
     return null
@@ -140,8 +141,8 @@ import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 import java.util.Map;
 
 public class ${pluginName}Plugin extends FrameProcessorPlugin {
-  public ${pluginName}Plugin(@Nullable Map<String, Object> options) {
-    super(options);
+  public ${pluginName}Plugin(@NonNull VisionCameraProxy proxy, @Nullable Map<String, Object> options) {
+    super(proxy, options);
   }
 
   @Nullable
@@ -172,8 +173,8 @@ ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}
 class ${pluginName}PluginPackage : ReactPackage {
   companion object {
     init {
-      FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}") { options ->
-        ${pluginName}Plugin(options)
+      FrameProcessorPluginRegistry.addFrameProcessorPlugin("${methodName}") { proxy, options ->
+        ${pluginName}Plugin(proxy, options)
       }
     }
   }
@@ -206,7 +207,7 @@ public class ${pluginName}PluginPackage implements ReactPackage {
   static {
     FrameProcessorPluginRegistry.addFrameProcessorPlugin(
             "${methodName}",
-            options -> new ${pluginName}Plugin(options)
+            (proxy, options) -> new ${pluginName}Plugin(proxy, options)
     );
   }
 
@@ -246,7 +247,7 @@ export const getSourceSetDirectory = (manifestPath: string, packageName: string)
 };
 
 /**
- * Helper that creates a directory for plugin's code inside a source set directory 
+ * Helper that creates a directory for plugin's code inside a source set directory
  */
 export const createAndroidPluginDirectory = (sourceDir: string, pluginName: string) => {
   const pluginDirectoryPath = path.join(sourceDir, pluginName.toLowerCase());
