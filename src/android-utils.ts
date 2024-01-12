@@ -138,11 +138,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.mrousavy.camera.frameprocessor.Frame;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
+import com.mrousavy.camera.frameprocessor.VisionCameraProxy;
 import java.util.Map;
 
 public class ${pluginName}Plugin extends FrameProcessorPlugin {
   public ${pluginName}Plugin(@NonNull VisionCameraProxy proxy, @Nullable Map<String, Object> options) {
-    super(proxy, options);
+    super();
   }
 
   @Nullable

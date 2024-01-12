@@ -68,7 +68,7 @@ describe('ios', () => {
       'import VisionCamera',
       `@objc(${pluginName}Plugin)`,
       `public class ${pluginName}Plugin: FrameProcessorPlugin`,
-      new RegExp('public override init\\(options: \\[AnyHashable: Any\\]\\! = \\[:\\]\\) {\\s+super.init\\(options: options\\)\\s+}'),
+      new RegExp('public override init\\(proxy: VisionCameraProxyHolder, options: \\[AnyHashable: Any\\]\\! = \\[:\\]\\) {\\s+super.init\\(proxy: proxy, options: options\\)\\s+}'),
       'public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any?',
     ]);
 
@@ -102,10 +102,11 @@ describe('ios', () => {
       '#import <VisionCamera/FrameProcessorPlugin.h>',
       '#import <VisionCamera/FrameProcessorPluginRegistry.h>',
       '#import <VisionCamera/Frame.h>',
+      '#import <VisionCamera/VisionCameraProxy.h>',
       `@interface ${pluginName}Plugin : FrameProcessorPlugin`,
       `@implementation ${pluginName}Plugin`,
-      new RegExp('- \\(instancetype _Nonnull\\)initWithOptions:\\(NSDictionary\\* _Nullable\\)options\\s+{\\s+self = \\[super initWithOptions:options\\];\\s+return self;\\s+}'),
-      '- (id _Nullable)callback:(Frame* _Nonnull)frame withArguments:(NSDictionary* _Nullable)arguments',
+      new RegExp('- \\(instancetype _Nonnull\\)initWithProxy:\\(VisionCameraProxyHolder\\*\\)proxy\\s+withOptions:\\(NSDictionary\\* _Nullable\\)options\\s+{\\s+self = \\[super initWithProxy:proxy withOptions:options\\];\\s+return self;\\s+}'),
+      new RegExp('- \\(id _Nullable\\)callback:\\(Frame\\* _Nonnull\\)frame\\s+withArguments:\\(NSDictionary\\* _Nullable\\)arguments'),
       `VISION_EXPORT_FRAME_PROCESSOR(${pluginName}Plugin, ${methodName})`,
     ]);
   });

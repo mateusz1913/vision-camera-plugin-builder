@@ -53,7 +53,8 @@ describe('android', () => {
     expectFileContents(pluginFile, [
       'import com.mrousavy.camera.frameprocessor.Frame',
       'import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin',
-      `class ${pluginName}Plugin(options: Map<String, Any>?): FrameProcessorPlugin(options)`,
+      'import com.mrousavy.camera.frameprocessor.VisionCameraProxy',
+      `class ${pluginName}Plugin(proxy: VisionCameraProxy, options: Map<String, Any>?): FrameProcessorPlugin()`,
       'override fun callback(frame: Frame, arguments: Map<String, Any>?): Any?',
     ]);
 
@@ -64,7 +65,7 @@ describe('android', () => {
       'import com.facebook.react.ReactPackage',
       'import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry',
       `class ${pluginName}PluginPackage : ReactPackage`,
-      new RegExp(`FrameProcessorPluginRegistry.addFrameProcessorPlugin\\("${methodName}"\\) { options ->\\s+${pluginName}Plugin\\(options\\)\\s+}`),
+      new RegExp(`FrameProcessorPluginRegistry.addFrameProcessorPlugin\\("${methodName}"\\) { proxy, options ->\\s+${pluginName}Plugin\\(proxy, options\\)\\s+}`),
     ]);
   });
   test('should create Java plugin boilerplate', async () => {
@@ -89,8 +90,9 @@ describe('android', () => {
       'import java.util.Map;',
       'import com.mrousavy.camera.frameprocessor.Frame;',
       'import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;',
+      'import com.mrousavy.camera.frameprocessor.VisionCameraProxy;',
       `public class ${pluginName}Plugin extends FrameProcessorPlugin`,
-      new RegExp(`public ${pluginName}Plugin\\(\\@Nullable Map<String, Object> options\\) {\\s+super\\(options\\);\\s+}`),
+      new RegExp(`public ${pluginName}Plugin\\(\\@NonNull VisionCameraProxy proxy, \\@Nullable Map<String, Object> options\\) {\\s+super\\(\\);\\s+}`),
       new RegExp('\\@Nullable\\s+\\@Override\\s+public Object callback\\(\\@NonNull Frame frame, \\@Nullable Map<String, Object> arguments\\)'),
     ]);
 
@@ -101,7 +103,7 @@ describe('android', () => {
       'import com.facebook.react.ReactPackage;',
       'import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry;',
       `public class ${pluginName}PluginPackage implements ReactPackage`,
-      new RegExp(`FrameProcessorPluginRegistry.addFrameProcessorPlugin\\(\\s+"${methodName}",\\s+options -> new ${pluginName}Plugin\\(options\\)\\s+\\);`),
+      new RegExp(`FrameProcessorPluginRegistry.addFrameProcessorPlugin\\(\\s+"${methodName}",\\s+\\(proxy, options\\) -> new ${pluginName}Plugin\\(proxy, options\\)\\s+\\);`),
     ]);
   });
 });
