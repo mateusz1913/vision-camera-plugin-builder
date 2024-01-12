@@ -10,11 +10,11 @@
 ## 🚀 Usage
 
 ```sh
-npx vision-camera-plugin-builder ios
+npx vision-camera-plugin-builder@latest ios
 ```
 
 ```sh
-npx vision-camera-plugin-builder android
+npx vision-camera-plugin-builder@latest android
 ```
 
 After generating native files, cli will output additional post-setup info
