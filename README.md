@@ -23,6 +23,7 @@ After generating native files, cli will output additional post-setup info
 
 | vision-camera-plugin-builder | react-native-vision-camera
 | --- | --- |
+| >= 0.7.0 | 3.8.0+ |
 | >= 0.5.0 | 3.5.0+ |
 | >= 0.3.0 | 3.0.0+ |
 | < 0.3.0 | 2.0.0+ |
