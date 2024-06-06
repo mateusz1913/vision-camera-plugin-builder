@@ -120,9 +120,9 @@ const preparePluginFile = (lang: 'Kotlin' | 'Java', packageName: string, pluginN
   const kotlinPluginContent = `
 package ${packageName}.${pluginName.toLowerCase()}
 
-import com.mrousavy.camera.frameprocessor.Frame
-import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
-import com.mrousavy.camera.frameprocessor.VisionCameraProxy
+import com.mrousavy.camera.frameprocessors.Frame
+import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin
+import com.mrousavy.camera.frameprocessors.VisionCameraProxy
 
 class ${pluginName}Plugin(proxy: VisionCameraProxy, options: Map<String, Any>?): FrameProcessorPlugin() {
   override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
@@ -136,9 +136,9 @@ package ${packageName}.${pluginName.toLowerCase()};
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.mrousavy.camera.frameprocessor.Frame;
-import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
-import com.mrousavy.camera.frameprocessor.VisionCameraProxy;
+import com.mrousavy.camera.frameprocessors.Frame;
+import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin;
+import com.mrousavy.camera.frameprocessors.VisionCameraProxy;
 import java.util.Map;
 
 public class ${pluginName}Plugin extends FrameProcessorPlugin {
@@ -169,7 +169,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
-import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry
+import com.mrousavy.camera.frameprocessors.FrameProcessorPluginRegistry
 ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin\n`}
 class ${pluginName}PluginPackage : ReactPackage {
   companion object {
@@ -199,7 +199,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry;
+import com.mrousavy.camera.frameprocessors.FrameProcessorPluginRegistry;
 ${isApplicationPackage ? '' : `import ${packageName}.${pluginName.toLowerCase()}.${pluginName}Plugin;\n`}
 import java.util.Collections;
 import java.util.List;
