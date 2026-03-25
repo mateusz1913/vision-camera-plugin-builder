@@ -94,8 +94,8 @@ describe('extractPackageName', () => {
     expect(
       extractPackageName(
         `${PROJECT_FILE_PATH}/android/app`,
-        `${PROJECT_FILE_PATH}/android/app/src/main/AndroidManifest.xml`
-      )
+        `${PROJECT_FILE_PATH}/android/app/src/main/AndroidManifest.xml`,
+      ),
     ).toBe(NAMESPACE_PACKAGE_NAME);
   });
   test('should retrieve package name from namespace value in build.gradle.kts', () => {
@@ -109,8 +109,8 @@ describe('extractPackageName', () => {
     expect(
       extractPackageName(
         `${PROJECT_FILE_PATH}/android/app`,
-        `${PROJECT_FILE_PATH}/android/app/src/main/AndroidManifest.xml`
-      )
+        `${PROJECT_FILE_PATH}/android/app/src/main/AndroidManifest.xml`,
+      ),
     ).toBe(NAMESPACE_PACKAGE_NAME);
   });
   test('should retrieve package name from package attribute in AndroidManifest.xml', () => {
