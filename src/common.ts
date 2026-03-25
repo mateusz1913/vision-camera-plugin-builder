@@ -32,7 +32,6 @@ export function getPromptResponse<ArgName extends string, T extends Record<
   argv: Arguments<unknown>,
 ) {
   return prompts<ArgName>(
-    // eslint-disable-next-line no-extra-parens
     Object.entries<Omit<PromptObject<ArgName>, 'validate'> & { validate?: (value: string) => boolean | string }>(questions)
       .filter(([ k, v ]) => {
         if (argv[k] && v.validate) {
